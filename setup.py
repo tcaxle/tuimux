@@ -12,11 +12,17 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/tcaxle/tuimux",
-    packages=setuptools.find_packages(),
+    packages=['tuimux'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: GNU/Linux",
     ],
     python_requires='>=3.8',
+    install_requires=[
+        'asciimatics',
+        'subprocess',
+        'libtmux',
+        'RandomWords',
+    ]
 )
