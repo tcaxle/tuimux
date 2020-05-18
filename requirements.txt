@@ -1,0 +1,8 @@
+asciimatics>=1.11.0
+future>=0.18.2
+libtmux>=0.8.2
+Pillow>=7.1.2
+psutil>=5.7.0
+pyfiglet>=0.8.post1
+RandomWords>=0.2.1
+wcwidth>=0.1.9
