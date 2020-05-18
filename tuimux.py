@@ -5,10 +5,12 @@ from asciimatics.scene import Scene
 from asciimatics.event import KeyboardEvent
 from asciimatics.screen import Screen, ManagedScreen
 from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
+import os
 import sys
 import subprocess
 import libtmux as tm
 from random_words import RandomNicknames
+import psutil
 
 rn = RandomNicknames()
 
@@ -177,12 +179,6 @@ class NewView(Frame):
         if isinstance(event, KeyboardEvent):
             if event.key_code in [Screen.ctrl("c")]:
                 raise StopApplication("User quit")
-            if event.key_code in [ord('q'), ord('Q'), ord('c'), ord('C')]:
-                raise NextScene("Main")
-            if event.key_code in [ord('a'), ord('A')]:
-                self._attach()
-            if event.key_code in [ord('b'), ord('N')]:
-                self._background()
 
         # Now pass on to lower levels for normal handling of the event.
         return super(NewView, self).process_event(event)
@@ -195,10 +191,25 @@ def demo(screen, scene):
 
     screen.play(scenes, stop_on_resize=True, start_scene=scene, allow_int=True)
 
+def check_tmux_running():
+    for proc in psutil.process_iter():
+        pname = proc.as_dict(attrs=["name"])["name"].lower()
+        if pname == "tmux: server":
+            return True
+    return False
+
 last_scene = None
-while True:
-    try:
-        Screen.wrapper(demo, catch_interrupt=True, arguments=[last_scene])
-        sys.exit(0)
-    except ResizeScreenError as e:
-        last_scene = e.scene
+if check_tmux_running():
+    while True:
+        try:
+            Screen.wrapper(demo, catch_interrupt=True, arguments=[last_scene])
+            sys.exit(0)
+        except ResizeScreenError as e:
+            last_scene = e.scene
+else:
+    subprocess.run([
+        "tmux",
+        "new",
+        "-s",
+        rn.random_nick(gender = "u"),
+    ])
